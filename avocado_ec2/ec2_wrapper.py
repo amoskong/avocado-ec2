@@ -106,6 +106,7 @@ class EC2InstanceWrapper(object):
     @clean_aws_resources
     def _init_resources(self, args):
         self.ec2 = boto3.resource('ec2')
+        self.ec2_client = boto3.client('ec2')
         self.key_pair = KeyPairWrapper(service=self.ec2, name=self.name)
         global EC2_KEYPAIR_WRAPPERS
         EC2_KEYPAIR_WRAPPERS.append(self.key_pair)
@@ -120,6 +121,8 @@ class EC2InstanceWrapper(object):
         global EC2_INSTANCES
         EC2_INSTANCES += inst_list
         self.instance = inst_list[0]
+        self.ec2_client.modify_instance_attribute(DisableApiTermination={'Value': False},
+                                                  InstanceId=self.instance.id)
         log = logging.getLogger("avocado.app")
         log.info("EC2_ID     : %s", self.instance.id)
         # Rename the instance
