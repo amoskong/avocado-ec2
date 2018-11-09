@@ -17,6 +17,7 @@ Run tests on an EC2 (Amazon Elastic Cloud) instance.
 import os
 import sys
 import logging
+import time
 
 from avocado.core import exit_codes
 from avocado.core import remoter
@@ -97,11 +98,8 @@ class EC2TestRunner(RemoteTestRunner):
             retrieve_cmd = 'sudo curl %s -o %s' % (remote_repo, local_repo)
             install_cmd = 'sudo dnf install -y python-avocado'
         elif distro_type == 'el':
-            remote_repo = ('https://avocado-project.org/data/repos/'
-                           'avocado-el.repo')
-            local_repo = '/etc/yum.repos.d/avocado.repo'
-            retrieve_cmd = 'sudo curl %s -o %s' % (remote_repo, local_repo)
-            install_cmd = 'sudo yum install -y python-avocado'
+            retrieve_cmd = 'rm -f .bashrc .bash_profile'
+            install_cmd = 'sudo yum install -y gcc openssl-devel python-devel python2-pip libvirt libvirt-devel pkgconfig gdb-gdbserver git && sudo pip install -r https://raw.githubusercontent.com/avocado-framework/avocado/36lts/requirements.txt && sudo pip install avocado-framework==36.4'
         elif distro_type == 'ubuntu':
             remote_repo = ('deb http://ppa.launchpad.net/lmr/avocado/ubuntu '
                            'wily main')
@@ -110,8 +108,10 @@ class EC2TestRunner(RemoteTestRunner):
             install_cmd = ('sudo apt-get install --yes '
                            '--allow-unauthenticated avocado')
 
+        # wait a moment to make sure the instance (network) is available
+        time.sleep(200)
         self.remote.run(retrieve_cmd, timeout=300)
-        self.remote.run(install_cmd, timeout=300)
+        self.remote.run(install_cmd, timeout=600, quiet=False)
 
     def tear_down(self):
         super(EC2TestRunner, self).tear_down()
