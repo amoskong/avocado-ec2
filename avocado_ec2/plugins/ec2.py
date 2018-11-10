@@ -101,7 +101,7 @@ class EC2TestRunner(RemoteTestRunner):
                            'avocado-el.repo')
             local_repo = '/etc/yum.repos.d/avocado.repo'
             retrieve_cmd = 'sudo curl %s -o %s' % (remote_repo, local_repo)
-            install_cmd = 'sudo yum install -y python-avocado'
+            install_cmd = 'sudo yum install -y python-avocado python2-avocado*'
         elif distro_type == 'ubuntu':
             remote_repo = ('deb http://ppa.launchpad.net/lmr/avocado/ubuntu '
                            'wily main')
