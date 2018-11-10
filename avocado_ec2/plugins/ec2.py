@@ -95,13 +95,13 @@ class EC2TestRunner(RemoteTestRunner):
                            'avocado-fedora.repo')
             local_repo = '/etc/yum.repos.d/avocado.repo'
             retrieve_cmd = 'sudo curl %s -o %s' % (remote_repo, local_repo)
-            install_cmd = 'sudo dnf install -y python-avocado'
+            install_cmd = 'sudo dnf install -y %s' % self.job.args.remote_install_pkgs
         elif distro_type == 'el':
             remote_repo = ('https://avocado-project.org/data/repos/'
                            'avocado-el.repo')
             local_repo = '/etc/yum.repos.d/avocado.repo'
             retrieve_cmd = 'sudo curl %s -o %s' % (remote_repo, local_repo)
-            install_cmd = 'sudo yum install -y python-avocado python2-avocado*'
+            install_cmd = 'sudo yum install -y %s' % self.job.args.remote_install_pkgs
         elif distro_type == 'ubuntu':
             remote_repo = ('deb http://ppa.launchpad.net/lmr/avocado/ubuntu '
                            'wily main')
@@ -129,6 +129,7 @@ class EC2TestRunner(RemoteTestRunner):
             self.job.args.remote_port = self.job.args.ec2_instance_ssh_port
             self.job.args.remote_username = self.job.args.ec2_ami_username
             self.job.args.remote_timeout = self.job.args.ec2_login_timeout
+            self.job.args.remote_install_pkgs = self.job.args.ec2_install_pkgs
             self.job.args.remote_password = None
             self.job.args.remote_no_copy = False
             super(EC2TestRunner, self).setup()
@@ -200,6 +201,9 @@ class EC2Cli(CLI):
                                            " to the EC2 instance. Defaults"
                                            " to 120 seconds"),
                                      default=120, type=int)
+        self.ec2_parser.add_argument('--ec2-install-pkgs', dest='ec2_install_pkgs',
+                                     help=("Packages to be installed by pip"),
+                                     default='python-avocado')
 
         self.configured = True
 
