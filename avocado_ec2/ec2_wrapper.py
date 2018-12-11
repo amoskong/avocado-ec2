@@ -120,6 +120,7 @@ class EC2InstanceWrapper(object):
         global EC2_INSTANCES
         EC2_INSTANCES += inst_list
         self.instance = inst_list[0]
+        self.instance.wait_until_exists()
         log = logging.getLogger("avocado.app")
         log.info("EC2_ID     : %s", self.instance.id)
         # Rename the instance
