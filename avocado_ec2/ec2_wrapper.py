@@ -121,6 +121,7 @@ class EC2InstanceWrapper(object):
         global EC2_INSTANCES
         EC2_INSTANCES += inst_list
         self.instance = inst_list[0]
+        self.instance.wait_until_exists()
         self.ec2_client.modify_instance_attribute(DisableApiTermination={'Value': False},
                                                   InstanceId=self.instance.id)
         log = logging.getLogger("avocado.app")
