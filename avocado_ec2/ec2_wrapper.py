@@ -17,6 +17,7 @@ import uuid
 import logging
 
 import boto3
+from botocore.exceptions import ClientError
 
 try:
     from botocore.vendored.requests.packages.urllib3.contrib.pyopenssl import extract_from_urllib3
@@ -43,7 +44,11 @@ def clean_aws_resources_atexit():
     global EC2_KEYPAIR_WRAPPERS
 
     for instance in EC2_INSTANCES:
-        instance.terminate()
+        try:
+            instance.terminate()
+        except ClientError as e:
+            if not 'InvalidInstanceID.NotFound' in e.message:
+                raise
 
     for key_pair in EC2_KEYPAIR_WRAPPERS:
         key_pair.destroy()
