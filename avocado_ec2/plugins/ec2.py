@@ -25,6 +25,7 @@ from avocado.core.remote import RemoteTestResult
 from avocado.core.remote import RemoteTestRunner
 from avocado.plugins.base import CLI
 from avocado.core.result import register_test_result_class
+from avocado.utils import wait
 
 from ..ec2_wrapper import EC2InstanceWrapper
 
@@ -132,6 +133,7 @@ class EC2TestRunner(RemoteTestRunner):
             self.job.args.remote_password = None
             self.job.args.remote_no_copy = False
             super(EC2TestRunner, self).setup()
+            wait.wait_for(self.remote.uptime, 300, text='Waiting for SSH to be up')
             self._install_avocado(distro_type=self.job.args.ec2_ami_distro_type)
         except Exception:
             self.tear_down()
