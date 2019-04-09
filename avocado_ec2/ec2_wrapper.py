@@ -111,7 +111,9 @@ class EC2InstanceWrapper(object):
     @clean_aws_resources
     def _init_resources(self, args):
         self.ec2 = boto3.resource('ec2')
-        self.ec2_client = boto3.client('ec2')
+        self.ec2_client = boto3.client('ec2',
+                                       aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID', None),
+                                       aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY', None))
         self.key_pair = KeyPairWrapper(service=self.ec2, name=self.name)
         global EC2_KEYPAIR_WRAPPERS
         EC2_KEYPAIR_WRAPPERS.append(self.key_pair)
