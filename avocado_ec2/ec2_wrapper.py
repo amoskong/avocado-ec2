@@ -131,6 +131,23 @@ class EC2InstanceWrapper(object):
                                                   InstanceId=self.instance.id)
         log = logging.getLogger("avocado.app")
         log.info("EC2_ID     : %s", self.instance.id)
+
+        # wait until instance exists and running, it's slow to init large instance.
+        for i in range(4):
+            try:
+                log.debug("wait_until_exists....")
+                self.instance.wait_until_exists()
+            except Exception as ex:
+                log.debug("except: sleep 20 seconds. %s" % ex)
+                time.sleep(20)
+        for i in range(4):
+            try:
+                log.debug("wait_until_running....")
+                self.instance.wait_until_running()
+            except Exception as ex:
+                log.debug("except: sleep 30 seconds. %s" % ex)
+                time.sleep(30)
+
         # Rename the instance
         self.ec2.create_tags(Resources=[self.instance.id],
                              Tags=[{'Key': 'Name', 'Value': self.name}])
