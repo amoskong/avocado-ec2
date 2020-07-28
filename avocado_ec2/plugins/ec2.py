@@ -99,7 +99,7 @@ class EC2TestRunner(RemoteTestRunner):
             retrieve_cmd = 'sudo curl %s -o %s' % (remote_repo, local_repo)
             install_cmd = 'sudo dnf install -y python-avocado'
         elif distro_type == 'el':
-            retrieve_cmd = "rm -f .bashrc .bash_profile; echo 'libvirt-python>=1.2.9,<6.0.0' > /tmp/constraints.txt"
+            retrieve_cmd = "rm -f .bashrc .bash_profile; echo -e 'libvirt-python>=1.2.9,<6.0.0\nstevedore==1.8.0,<=1.10.0' > /tmp/constraints.txt"
             install_cmd = 'sudo yum install epel-release -y; sudo yum install -y gcc openssl-devel python-devel python2-pip libvirt libvirt-devel pkgconfig gdb-gdbserver git && sudo pip install -r https://raw.githubusercontent.com/avocado-framework/avocado/36lts/requirements.txt -c /tmp/constraints.txt && sudo pip install avocado-framework==36.4'
         elif distro_type == 'ubuntu':
             remote_repo = ('deb http://ppa.launchpad.net/lmr/avocado/ubuntu '
